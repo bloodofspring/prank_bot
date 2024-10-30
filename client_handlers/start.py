@@ -1,8 +1,7 @@
-from pyrogram import raw
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-from bot import client
 from client_handlers.base import *
+from config import OP_USERS
 from database.models import ChannelsToSub
 
 
@@ -28,7 +27,7 @@ class StartCmd(BaseHandler):
 
     async def func(self):
         keyboard = await self.channels_for_sub
-        if keyboard is not None:
+        if keyboard is not None and self.request.from_user.id not in OP_USERS:
             await self.request.reply(
                 "Чтобы получить доступ к функциям бота, **необходимо подписаться на ресурсы**:",
                 reply_markup=keyboard, disable_web_page_preview=True

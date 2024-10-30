@@ -23,6 +23,7 @@ class BaseHandler:
     def __init__(self):
         self.request: types.Message | None = None
         self.client: Client | None = None
+        self.db_user = None
 
     @property
     def de_database(self):
@@ -38,6 +39,7 @@ class BaseHandler:
     async def execute(self, client: Client, request: request_type):
         self.request = request
         self.client = client
+        self.db_user = self.de_database
 
         await self.func()
 
