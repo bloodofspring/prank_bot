@@ -25,10 +25,6 @@ class BaseHandler:
         self.client: Client | None = None
 
     @property
-    def is_authorized(self):
-        return self.de_database.config[0].is_authorized
-
-    @property
     def de_database(self):
         db_user, created = BotUsers.get_or_create(tg_id=self.request.from_user.id)
         if created:
@@ -36,14 +32,14 @@ class BaseHandler:
 
         return db_user
 
-    async def func(self, client: Client, request: request_type):
+    async def func(self):
         raise NotImplementedError
 
     async def execute(self, client: Client, request: request_type):
         self.request = request
         self.client = client
 
-        await self.func(client=client, request=request)
+        await self.func()
 
     @property
     def de_pyrogram_handler(self):
