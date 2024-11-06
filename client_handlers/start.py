@@ -1,48 +1,29 @@
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from client_handlers.base import *
-from config import OP_USERS
-from database.models import ChannelsToSub
+from filters import is_admin
 
 
 class StartCmd(BaseHandler):
     FILTER = command("start")
 
-    @property
-    async def channels_for_sub(self) -> InlineKeyboardMarkup | None:
-        sub_instances = []
+    def add_config_button_if_admin(self, keyboard: list[list[InlineKeyboardButton]]):
+        if not is_admin(None, None, m=self.request):
+            return keyboard
 
-        for chan in ChannelsToSub.select():
-            try:
-                await self.client.get_chat_member(chat_id=chan.tg_id, user_id=self.request.from_user.id)
-            except:
-                sub_instances.append(chan)
+        keyboard += [[InlineKeyboardButton("Настроить ОП", callback_data="op_settings")]]
 
-        if not sub_instances:
-            return None
-
-        return InlineKeyboardMarkup(inline_keyboard=[[
-            InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", url=f"https://t.me/{c.tg_id.strip('@')}")
-        ] for c in sub_instances])
+        return keyboard
 
     async def func(self):
-        keyboard = await self.channels_for_sub
-        if keyboard is not None and self.request.from_user.id not in OP_USERS:
-            await self.request.reply(
-                "Чтобы получить доступ к функциям бота, **необходимо подписаться на ресурсы**:",
-                reply_markup=keyboard, disable_web_page_preview=True
-            )
-            await self.request.reply((
-                f"**Привет, {self.request.from_user.first_name}**\n"
-                "Чтобы пользоваться ботом, подпишись выполни задания.\n"
-                "Потом, нажми на /start еще раз, чтобы получить свою ссылку."
-            ))
-
-            return
+        keyboard = [
+            [InlineKeyboardButton("Пранкануть друга", callback_data="prank")],
+            [InlineKeyboardButton("Как работает бот", callback_data="how_d_it_works")],
+            [InlineKeyboardButton("Наш канал", url="https://t.me/Prankston")],
+        ]
+        keyboard = self.add_config_button_if_admin(keyboard=keyboard)
 
         await self.request.reply((
-            "**Привет**,\n"
-            "🔗 Вот твоя ссылка:\n"
-            f"https://yandex-food-f2a0f4.netlify.app\n"
-            "Отправляй ссылку друзьям, чтобы напугать их."
-        ))
+            "Привет, это @PrankerStonbot\n"
+            "Выбери действие."
+        ), reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard))

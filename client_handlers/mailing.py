@@ -1,33 +1,25 @@
 import asyncio
 
-from pyrogram.types import Message
-
 from client_handlers.base import *
-from config import OP_USERS
+from config import ADMINS
 from database.models import BotUsers
-
-
-def is_admin(_, __, m: Message):
-    return m and m.from_user and m.from_user.id in OP_USERS
-
-
-is_admin_filter = create(is_admin)
+from filters import is_admin
 
 
 class Mailing(BaseHandler):
-    FILTER = command("mailing") & is_admin_filter
+    FILTER = command("mailing") & is_admin
 
     async def mailing(self) -> int:
         messages_sent = 0
 
         for user in BotUsers.select():
             try:
-                if user.tg_id in OP_USERS:
+                if user.tg_id in ADMINS:
                     continue
 
                 await self.request.reply_to_message.copy(chat_id=user.tg_id)
                 messages_sent += 1
-                await asyncio.sleep(1)  # Чтобы клиента не забанили
+                await asyncio.sleep(1)
             except:
                 pass
 
