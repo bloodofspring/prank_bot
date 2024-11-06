@@ -38,7 +38,7 @@ async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQ
     return keyboard
 
 
-def color_log(text: str, colors: str | list[str], head_c: str = Fore.LIGHTGREEN_EX, separator: str = " ") -> str:
+def color_log(text: str, colors: str | list[str], head_c: str = Fore.LIGHTWHITE_EX, separator: str = " ") -> str:
     now = datetime.now()
     now_shorted = f"{now.year}-{now.month}-{now.day} {now.hour}:{now.minute}:{now.second}"
 
