@@ -1,11 +1,13 @@
 """Run this file to start bot"""
 import os
 
+from colorama import Fore, init
 from dotenv import load_dotenv
 
 from bot import client
 from client_handlers import active_handlers
 from database.create import create_tables
+from util import color_log
 
 
 def add_handlers() -> None:
@@ -26,7 +28,8 @@ def run_bot() -> None:
     add_handlers()
     create_tables()
     remove_bot_journals()
-    print("Клиент запущен!")
+    init(autoreset=True)
+    print(color_log("Клиент запущен!", Fore.LIGHTGREEN_EX, head_c=Fore.LIGHTYELLOW_EX))
     client.run()
 
 

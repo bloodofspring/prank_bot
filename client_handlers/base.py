@@ -1,3 +1,4 @@
+from colorama import Fore
 from pyrogram import Client
 from pyrogram import filters, types
 from pyrogram.filters import command, all_filter, regex, create
@@ -6,6 +7,7 @@ from pyrogram.handlers.handler import Handler
 from pyrogram.types import CallbackQuery
 
 from database.models.users import BotUserConfig, BotUsers
+from util import color_log
 
 request_type = types.Message | types.CallbackQuery  # add some types here if you need:3
 __all__ = [
@@ -32,6 +34,7 @@ class BaseHandler:
         db_user, created = BotUsers.get_or_create(tg_id=request.chat.id)
         if created:
             BotUserConfig.create(is_authorized=False, user=db_user)
+            print(color_log(f"Пользователь {request.chat.id} занесен в базу данных!", Fore.LIGHTGREEN_EX))
 
         return db_user
 
