@@ -1,3 +1,6 @@
+from datetime import datetime
+
+from colorama import init, Fore
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, Message, CallbackQuery
 
@@ -5,7 +8,7 @@ from database.models import ChannelsToSub
 
 
 async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQuery, to_remove: bool = False) -> (
-        list[list[InlineKeyboardButton]]):
+list[list[InlineKeyboardButton]]):
     sub_instances = []
 
     user_id = request.message.chat.id if isinstance(request, CallbackQuery) else request.chat.id
@@ -33,3 +36,22 @@ async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQ
         ])
 
     return keyboard
+
+
+def color_log(text: str, colors: str | list[str], head_c: str = Fore.LIGHTGREEN_EX, separator: str = " ") -> str:
+    init(autoreset=True)
+    now = datetime.now()
+    now_shorted = f"{now.year}-{now.month}-{now.day} {now.hour}:{now.minute}:{now.second}"
+
+    if not isinstance(colors, list):
+        return head_c + f"[{now_shorted}]: >> " + colors + text
+
+    parts = text.split(separator)
+    res = ""
+    for w, c in zip(parts, colors):
+        res += c + w + " "
+
+    if len(parts) > len(colors):
+        res += colors[-1] + res[len(colors) - 1:]
+
+    return head_c + f"[{now_shorted}]: >> " + res

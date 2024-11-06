@@ -3,6 +3,7 @@ import os
 
 from dotenv import load_dotenv
 
+from colorama import Fore
 from bot import client
 from client_handlers import active_handlers
 from database.create import create_tables
@@ -26,7 +27,6 @@ def run_bot() -> None:
     add_handlers()
     create_tables()
     remove_bot_journals()
-    print("Клиент запущен!")
     client.run()
 
 
