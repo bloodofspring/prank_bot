@@ -1,8 +1,9 @@
+from colorama import Fore
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from client_handlers.base import *
 from config import ADMINS
-from util import channels_for_sub_keyboard
+from util import channels_for_sub_keyboard, color_log
 
 
 class GetLink(BaseHandler):
@@ -18,6 +19,9 @@ class GetLink(BaseHandler):
         keyboard = await channels_for_sub_keyboard(client=self.client, request=self.request)
 
         if keyboard != [] and self.request.from_user.id not in ADMINS:
+            print(color_log(
+                f"Пользователь {self.request.from_user.id} не подписан на ОП! Отправка сообщения..", Fore.LIGHTGREEN_EX
+            ))
             keyboard = self.add_check_button(keyboard=keyboard)
             await self.request.answer("Ты не подписан на все необходимые каналы!", show_alert=True)
             await self.request.message.reply(
@@ -26,6 +30,9 @@ class GetLink(BaseHandler):
             )
             return
 
+        print(color_log(
+            f"Пользователь {self.request.from_user.id} подписан на ОП. Отправка на главную..", Fore.LIGHTGREEN_EX
+        ))
         await self.request.message.reply((
             "Привет,\n"
             "🔗 Вот твоя ссылка:\n"

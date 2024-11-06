@@ -1,8 +1,9 @@
+from colorama import Fore
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from client_handlers.base import *
 from database.models import ChannelsToSub
-from util import channels_for_sub_keyboard
+from util import channels_for_sub_keyboard, color_log
 
 
 def add_sys_buttons(keyboard: list[list[InlineKeyboardButton]]) -> list[list[InlineKeyboardButton]]:
@@ -51,6 +52,7 @@ class ChangeOpConfig(BaseHandler):
             case _ as rem if "rem_op" in rem:
                 channel_name = rem.split()[1].strip()
                 ChannelsToSub.delete_by_id(ChannelsToSub.get(tg_id=channel_name))
+                print(color_log(f"Канал {channel_name} был удален из списка ОП!", Fore.LIGHTGREEN_EX))
                 await self.request.message.reply(
                     f"Канал {channel_name} удален!",
                     reply_markup=InlineKeyboardMarkup(
@@ -63,11 +65,14 @@ class ChannelUsernameDownloader(BaseHandler):
     FILTER = create(lambda _, __, m: m and m.text and "@" in m.text)
 
     async def func(self):
-        if not ChannelsToSub.get_or_none(tg_id=self.request.text):
+        if (ChannelsToSub.get_or_none(tg_id=self.request.text) is None and len(self.request.text) <= 34 and
+                self.request.text.startswith("@") and len(self.request.text.split()) == 1):
             try:
                 ChannelsToSub.create(tg_id=self.request.text)
             except:
                 pass
+
+        print(color_log(f"Канал {self.request.text} был добавлен в список ОП!", Fore.LIGHTGREEN_EX))
 
         await self.request.reply(
             f"Канал {self.request.text} добавлен в список ОП!",
