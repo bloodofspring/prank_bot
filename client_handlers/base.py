@@ -21,7 +21,7 @@ class BaseHandler:
     FILTER: filters.Filter | None = None
 
     def __init__(self):
-        self.request: types.Message | None = None
+        self.request: request_type | None = None
         self.client: Client | None = None
         self.db_user = None
 
