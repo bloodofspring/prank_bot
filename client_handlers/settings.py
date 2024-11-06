@@ -21,7 +21,7 @@ class OpSettings(BaseHandler):
     async def func(self):
         keyboard = add_sys_buttons(keyboard=await channels_for_sub_keyboard(client=self.client, request=self.request))
         await self.request.message.reply(
-            f"Настройка OП. Добавлено каналов -- {len(keyboard) - 2}",
+            f"Настройка OП. Добавлено каналов: {len(keyboard) - 1}",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
         )
 
