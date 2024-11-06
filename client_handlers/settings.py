@@ -1,6 +1,6 @@
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-from base import *
+from client_handlers.base import *
 from database.models import ChannelsToSub
 from util import channels_for_sub_keyboard
 
@@ -20,7 +20,10 @@ class OpSettings(BaseHandler):
 
     async def func(self):
         keyboard = add_sys_buttons(keyboard=await channels_for_sub_keyboard(client=self.client, request=self.request))
-        await self.request.message.reply("Настройка OП", reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard))
+        await self.request.message.reply(
+            f"Настройка OП. Добавлено каналов -- {len(keyboard) - 2}",
+            reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
+        )
 
 
 class ChangeOpConfig(BaseHandler):
@@ -46,7 +49,7 @@ class ChangeOpConfig(BaseHandler):
                 )
 
             case _ as rem if "rem_op" in rem:
-                channel_name = rem.split()[0].strip()
+                channel_name = rem.split()[1].strip()
                 ChannelsToSub.delete_by_id(ChannelsToSub.get(tg_id=channel_name))
                 await self.request.message.reply(
                     f"Канал {channel_name} удален!",
@@ -54,3 +57,21 @@ class ChangeOpConfig(BaseHandler):
                         [[InlineKeyboardButton("К настройкам ОП", callback_data="op_settings")]]
                     )
                 )
+
+
+class ChannelUsernameDownloader(BaseHandler):
+    FILTER = create(lambda _, __, m: m and m.text and "@" in m.text)
+
+    async def func(self):
+        if not ChannelsToSub.get_or_none(tg_id=self.request.text):
+            try:
+                ChannelsToSub.create(tg_id=self.request.text)
+            except:
+                pass
+
+        await self.request.reply(
+            f"Канал {self.request.text} добавлен в список ОП!",
+            reply_markup=InlineKeyboardMarkup(
+                [[InlineKeyboardButton("К настройкам", callback_data="op_settings")]]
+            )
+        )

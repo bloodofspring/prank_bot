@@ -5,7 +5,7 @@ from database.models import ChannelsToSub
 
 
 async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQuery, to_remove: bool = False) -> (
-        list[list[InlineKeyboardButton]] | None):
+        list[list[InlineKeyboardButton]]):
     sub_instances = []
 
     if isinstance(request, CallbackQuery):
@@ -19,11 +19,18 @@ async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQ
             sub_instances.append(chan)
 
     if not sub_instances:
-        return None
+        return []
 
     keyboard = []
     for c in sub_instances:
-        data = {f"rem_op {c.tg_id}" if to_remove else "url": f"https://t.me/{c.tg_id.strip('@')}"}
-        keyboard.append([InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", **data)])
+        if to_remove:
+            keyboard.append([
+                InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", callback_data=f"rem_op {c.tg_id}")
+            ])
+            continue
+
+        keyboard.append([
+            InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", url=f"https://t.me/{c.tg_id.strip('@')}")
+        ])
 
     return keyboard
