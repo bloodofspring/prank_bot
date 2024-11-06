@@ -16,9 +16,9 @@ class GetLink(BaseHandler):
 
     async def func(self):
         keyboard = await channels_for_sub_keyboard(client=self.client, request=self.request)
-        keyboard = self.add_check_button(keyboard=keyboard)
 
-        if keyboard is not None and self.request.from_user.id not in ADMINS:
+        if keyboard != [] and self.request.from_user.id not in ADMINS:
+            keyboard = self.add_check_button(keyboard=keyboard)
             await self.request.message.reply(
                 "Извини, бот **бесплатный**! Для доступа к функциям **подпишись пожалуйста на канал!**",
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard), disable_web_page_preview=True

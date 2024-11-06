@@ -8,12 +8,11 @@ async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQ
         list[list[InlineKeyboardButton]]):
     sub_instances = []
 
-    if isinstance(request, CallbackQuery):
-        request = request.message
+    user_id = request.message.chat.id if isinstance(request, CallbackQuery) else request.chat.id
 
     for chan in ChannelsToSub.select():
         try:
-            await client.get_chat_member(chat_id=chan.tg_id, user_id=request.from_user.id)
+            await client.get_chat_member(chat_id=chan.tg_id, user_id=user_id)
         except Exception as e:
             can_t_get_user_error = e
             sub_instances.append(chan)
