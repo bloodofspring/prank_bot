@@ -1,5 +1,6 @@
 from client_handlers.buttons_h import HowDItWorks, GetLink
 from client_handlers.mailing import Mailing
+from client_handlers.settings import OpSettings
 from client_handlers.start import StartCmd
 
 active_handlers = [
@@ -7,4 +8,5 @@ active_handlers = [
     Mailing,
     HowDItWorks,
     GetLink,
+    OpSettings,
 ]
