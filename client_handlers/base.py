@@ -3,6 +3,7 @@ from pyrogram import filters, types
 from pyrogram.filters import command, all_filter, regex, create
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.handlers.handler import Handler
+from pyrogram.types import CallbackQuery
 
 from database.models.users import BotUserConfig, BotUsers
 
@@ -27,7 +28,8 @@ class BaseHandler:
 
     @property
     def de_database(self):
-        db_user, created = BotUsers.get_or_create(tg_id=self.request.from_user.id)
+        request = self.request.message if isinstance(self.request, CallbackQuery) else self.request
+        db_user, created = BotUsers.get_or_create(tg_id=request.chat.id)
         if created:
             BotUserConfig.create(is_authorized=False, user=db_user)
 
