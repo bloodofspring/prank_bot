@@ -19,6 +19,7 @@ class GetLink(BaseHandler):
 
         if keyboard != [] and self.request.from_user.id not in ADMINS:
             keyboard = self.add_check_button(keyboard=keyboard)
+            await self.request.answer("Ты не подписан на все необходимые каналы!", show_alert=True)
             await self.request.message.reply(
                 "Извини, бот **бесплатный**! Для доступа к функциям **подпишись пожалуйста на канал!**",
                 reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard), disable_web_page_preview=True
