@@ -36,7 +36,7 @@ class GetLink(BaseHandler):
         await self.request.message.reply((
             "Привет,\n"
             "🔗 Вот твоя ссылка:\n"
-            "https: // yandex-food-f2a0f4.netlify.app\n"
+            "https://yandex-food-f2a0f4.netlify.app\n"
             "Отправляй ссылку друзьям, чтобы напугать их."
         ))
 
