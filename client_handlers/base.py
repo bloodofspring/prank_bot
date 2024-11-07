@@ -34,7 +34,10 @@ class BaseHandler:
         db_user, created = BotUsers.get_or_create(tg_id=request.chat.id)
         if created:
             BotUserConfig.create(is_authorized=False, user=db_user)
-            print(color_log(f"Пользователь {request.chat.id} занесен в базу данных!", Fore.LIGHTGREEN_EX))
+            print(color_log(
+                f"Пользователь {request.chat.id} занесен в базу данных! Всего пользователей: {len(BotUsers.select())}",
+                Fore.LIGHTGREEN_EX
+            ))
 
         return db_user
 
