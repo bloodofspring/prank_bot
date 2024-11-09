@@ -4,7 +4,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from client_handlers.base import *
 from database.models import ChannelsToSub
-from util import channels_for_sub_keyboard, color_log
+from util import all_op_keyboard, color_log
 
 
 def add_sys_buttons(keyboard: list[list[InlineKeyboardButton]]) -> list[list[InlineKeyboardButton]]:
@@ -21,7 +21,7 @@ class OpSettings(BaseHandler):
     FILTER = create(lambda _, __, q: q and q.data and q.data == "op_settings")
 
     async def func(self):
-        keyboard = add_sys_buttons(keyboard=await channels_for_sub_keyboard(client=self.client, request=self.request))
+        keyboard = add_sys_buttons(keyboard=all_op_keyboard(remove=False))
         await self.request.message.reply(
             f"Настройка OП. Добавлено каналов: {len(keyboard) - 1}",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -43,7 +43,7 @@ class ChangeOpConfig(BaseHandler):
                 )
 
             case "rem_op":
-                keyboard = await channels_for_sub_keyboard(client=self.client, request=self.request, to_remove=True)
+                keyboard = all_op_keyboard(remove=True)
                 keyboard += [[InlineKeyboardButton("Отмена", callback_data="op_settings")]]
                 await self.request.message.reply(
                     "Нажмите на кнопку, которую хотите удалить",

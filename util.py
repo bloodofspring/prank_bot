@@ -8,7 +8,7 @@ from client_handlers.base import request_type
 from database.models import ChannelsToSub
 
 
-async def channels_for_sub_keyboard(client: Client, request: request_type) -> (list[list[InlineKeyboardButton]]):
+async def sub_op_keyboard(client: Client, request: request_type) -> (list[list[InlineKeyboardButton]]):
     user_id = request.message.chat.id if isinstance(request, CallbackQuery) else request.chat.id
     keyboard = []
 
@@ -22,7 +22,7 @@ async def channels_for_sub_keyboard(client: Client, request: request_type) -> (l
     return keyboard
 
 
-def get_all_op(remove: bool):
+def all_op_keyboard(remove: bool):
     keyboard = []
 
     for chan in ChannelsToSub.select():
