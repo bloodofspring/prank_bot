@@ -1,9 +1,10 @@
 from colorama import Fore
+from peewee import OperationalError
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from client_handlers.base import *
 from database.models import ChannelsToSub
-from util import channels_for_sub_keyboard, color_log
+from util import all_op_keyboard, color_log
 
 
 def add_sys_buttons(keyboard: list[list[InlineKeyboardButton]]) -> list[list[InlineKeyboardButton]]:
@@ -20,7 +21,7 @@ class OpSettings(BaseHandler):
     FILTER = create(lambda _, __, q: q and q.data and q.data == "op_settings")
 
     async def func(self):
-        keyboard = add_sys_buttons(keyboard=await channels_for_sub_keyboard(client=self.client, request=self.request))
+        keyboard = add_sys_buttons(keyboard=all_op_keyboard(remove=False))
         await self.request.message.reply(
             f"Настройка OП. Добавлено каналов: {len(keyboard) - 1}",
             reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard)
@@ -42,7 +43,7 @@ class ChangeOpConfig(BaseHandler):
                 )
 
             case "rem_op":
-                keyboard = await channels_for_sub_keyboard(client=self.client, request=self.request, to_remove=True)
+                keyboard = all_op_keyboard(remove=True)
                 keyboard += [[InlineKeyboardButton("Отмена", callback_data="op_settings")]]
                 await self.request.message.reply(
                     "Нажмите на кнопку, которую хотите удалить",
@@ -64,16 +65,21 @@ class ChangeOpConfig(BaseHandler):
 class ChannelUsernameDownloader(BaseHandler):
     FILTER = create(lambda _, __, m: m and m.text and "@" in m.text)
 
+    def url_is_valid(self):
+        return (ChannelsToSub.get_or_none(tg_id=self.request.text) is None and len(self.request.text) <= 34 and
+                self.request.text.startswith("@") and len(self.request.text.split()) == 1)
+
     async def func(self):
-        if (ChannelsToSub.get_or_none(tg_id=self.request.text) is None and len(self.request.text) <= 34 and
-                self.request.text.startswith("@") and len(self.request.text.split()) == 1):
-            try:
-                ChannelsToSub.create(tg_id=self.request.text)
-            except:
-                pass
+        if not self.url_is_valid():
+            return
+
+        try:
+            await self.client.get_chat(chat_id=self.request.text)
+            ChannelsToSub.create(tg_id=self.request.text)
+        except (OperationalError, ValueError, Exception):
+            return
 
         print(color_log(f"Канал {self.request.text} был добавлен в список ОП!", Fore.LIGHTGREEN_EX))
-
         await self.request.reply(
             f"Канал {self.request.text} добавлен в список ОП!",
             reply_markup=InlineKeyboardMarkup(

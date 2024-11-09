@@ -3,7 +3,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 from client_handlers.base import *
 from config import ADMINS
-from util import channels_for_sub_keyboard, color_log
+from util import sub_op_keyboard, color_log
 
 
 class GetLink(BaseHandler):
@@ -16,7 +16,7 @@ class GetLink(BaseHandler):
         return keyboard
 
     async def func(self):
-        keyboard = await channels_for_sub_keyboard(client=self.client, request=self.request)
+        keyboard = await sub_op_keyboard(client=self.client, request=self.request)
 
         if keyboard != [] and self.request.from_user.id not in ADMINS:
             print(color_log(
