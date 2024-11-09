@@ -2,40 +2,37 @@ from datetime import datetime
 
 from colorama import Fore
 from pyrogram import Client
-from pyrogram.types import InlineKeyboardButton, Message, CallbackQuery
+from pyrogram.types import InlineKeyboardButton, CallbackQuery
 
+from client_handlers.base import request_type
 from database.models import ChannelsToSub
 
 
-async def channels_for_sub_keyboard(client: Client, request: Message | CallbackQuery, to_remove: bool = False) -> (
-        list[list[InlineKeyboardButton]]):
-    sub_instances = []
-
+async def channels_for_sub_keyboard(client: Client, request: request_type) -> (list[list[InlineKeyboardButton]]):
     user_id = request.message.chat.id if isinstance(request, CallbackQuery) else request.chat.id
+    keyboard = []
 
-    for chan in ChannelsToSub.select():
+    for n, chan in enumerate(ChannelsToSub.select(), start=1):
         try:
             await client.get_chat_member(chat_id=chan.tg_id, user_id=user_id)
+            keyboard.append([InlineKeyboardButton(text=f"Канал {n}", url=f"https://t.me/{chan.tg_id.strip('@')}")])
         except Exception as e:
             can_t_get_user_error = e
-            sub_instances.append(chan)
 
-    if not sub_instances:
-        return []
+    return keyboard
 
+
+def get_all_op(remove: bool):
     keyboard = []
-    for c in sub_instances:
-        if to_remove:
-            keyboard.append([
-                InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", callback_data=f"rem_op {c.tg_id}")
-            ])
+
+    for chan in ChannelsToSub.select():
+        if remove:
+            keyboard.append([InlineKeyboardButton(text=f"Канал {chan.ID}", callback_data=f"rem_op {chan.tg_id}")])
             continue
 
         keyboard.append([
-            InlineKeyboardButton(text=f"Канал {sub_instances.index(c) + 1}", url=f"https://t.me/{c.tg_id.strip('@')}")
+            InlineKeyboardButton(text=f"Канал {chan.ID} ({chan.tg_id})", url=f"https://t.me/{chan.tg_id.strip('@')}")
         ])
-
-    return keyboard
 
 
 def color_log(text: str, colors: str | list[str], head_c: str = Fore.LIGHTWHITE_EX, separator: str = " ") -> str:
