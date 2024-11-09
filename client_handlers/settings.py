@@ -1,4 +1,5 @@
 from colorama import Fore
+from peewee import OperationalError
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from client_handlers.base import *
@@ -64,16 +65,21 @@ class ChangeOpConfig(BaseHandler):
 class ChannelUsernameDownloader(BaseHandler):
     FILTER = create(lambda _, __, m: m and m.text and "@" in m.text)
 
+    def url_is_valid(self):
+        return (ChannelsToSub.get_or_none(tg_id=self.request.text) is None and len(self.request.text) <= 34 and
+                self.request.text.startswith("@") and len(self.request.text.split()) == 1)
+
     async def func(self):
-        if (ChannelsToSub.get_or_none(tg_id=self.request.text) is None and len(self.request.text) <= 34 and
-                self.request.text.startswith("@") and len(self.request.text.split()) == 1):
-            try:
-                ChannelsToSub.create(tg_id=self.request.text)
-            except:
-                pass
+        if not self.url_is_valid():
+            return
+
+        try:
+            await self.client.get_chat(chat_id=self.request.text)
+            ChannelsToSub.create(tg_id=self.request.text)
+        except (OperationalError, ValueError, Exception):
+            return
 
         print(color_log(f"Канал {self.request.text} был добавлен в список ОП!", Fore.LIGHTGREEN_EX))
-
         await self.request.reply(
             f"Канал {self.request.text} добавлен в список ОП!",
             reply_markup=InlineKeyboardMarkup(
