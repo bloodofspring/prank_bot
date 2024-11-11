@@ -1,6 +1,6 @@
 import os
 
-from base import *
+from client_handlers.base import *
 from database.models import BotUsers
 from filters import is_admin_filter
 
