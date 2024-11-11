@@ -14,9 +14,9 @@ async def sub_op_keyboard(client: Client, request) -> (list[list[InlineKeyboardB
     for n, chan in enumerate(ChannelsToSub.select(), start=1):
         try:
             await client.get_chat_member(chat_id=chan.tg_id, user_id=user_id)
-            keyboard.append([InlineKeyboardButton(text=f"Канал {n}", url=f"https://t.me/{chan.tg_id.strip('@')}")])
         except Exception as e:
             can_t_get_user_error = e
+            keyboard.append([InlineKeyboardButton(text=f"Канал {n}", url=f"https://t.me/{chan.tg_id.strip('@')}")])
 
     return keyboard
 
