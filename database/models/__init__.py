@@ -1,8 +1,5 @@
-from database.models.ads_and_channels import ChannelsToSub
-from database.models.users import BotUsers, BotUserConfig
+from database.models.users import BotUsers
 
 active_models = [
     BotUsers,
-    BotUserConfig,
-    ChannelsToSub,
 ]

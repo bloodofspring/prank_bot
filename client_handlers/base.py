@@ -6,7 +6,7 @@ from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.handlers.handler import Handler
 from pyrogram.types import CallbackQuery
 
-from database.models.users import BotUserConfig, BotUsers
+from database.models.users import BotUsers
 from util import color_log
 
 request_type = types.Message | types.CallbackQuery  # add some types here if you need:3
@@ -33,7 +33,6 @@ class BaseHandler:
         request = self.request.message if isinstance(self.request, CallbackQuery) else self.request
         db_user, created = BotUsers.get_or_create(tg_id=request.chat.id)
         if created:
-            BotUserConfig.create(is_authorized=False, user=db_user)
             print(color_log(
                 f"Пользователь {request.chat.id} занесен в базу данных! Всего пользователей: {len(BotUsers.select())}",
                 Fore.LIGHTGREEN_EX
