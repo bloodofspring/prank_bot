@@ -4,11 +4,10 @@ from colorama import Fore
 from pyrogram import Client
 from pyrogram.types import InlineKeyboardButton, CallbackQuery
 
-from client_handlers.base import request_type
 from database.models import ChannelsToSub
 
 
-async def sub_op_keyboard(client: Client, request: request_type) -> (list[list[InlineKeyboardButton]]):
+async def sub_op_keyboard(client: Client, request) -> (list[list[InlineKeyboardButton]]):
     user_id = request.message.chat.id if isinstance(request, CallbackQuery) else request.chat.id
     keyboard = []
 
