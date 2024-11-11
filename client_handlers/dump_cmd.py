@@ -10,7 +10,9 @@ class Dump(BaseHandler):
 
     async def func(self):
         with open("dump.txt", "w") as f:
-            f.write("\n".join(map(lambda x: x.tg_id, BotUsers.select())))
+            db_users = BotUsers.select()
+            f.write(f"Всего пользователей: {len(db_users)}")
+            f.write("\n".join(map(lambda x: str(x.tg_id), db_users)))
 
         await self.request.reply_document(document=open("dump.txt", "rb"))
 
