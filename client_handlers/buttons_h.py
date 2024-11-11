@@ -1,9 +1,11 @@
 from colorama import Fore
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from colorama import Fore
+from flyerapi import Flyer
+from pyrogram.types import InlineKeyboardButton
 
 from client_handlers.base import *
-from config import ADMINS
-from util import sub_op_keyboard, color_log
+from config import FLYER_TOKEN
+from util import color_log
 
 
 class GetLink(BaseHandler):
@@ -16,18 +18,25 @@ class GetLink(BaseHandler):
         return keyboard
 
     async def func(self):
-        keyboard = await sub_op_keyboard(client=self.client, request=self.request)
-
-        if keyboard != [] and self.request.from_user.id not in ADMINS:
+        # keyboard = await sub_op_keyboard(client=self.client, request=self.request)
+        #
+        # if keyboard != [] and self.request.from_user.id not in ADMINS:
+        #     print(color_log(
+        #         f"Пользователь {self.request.from_user.id} не подписан на ОП! Отправка сообщения..", Fore.LIGHTGREEN_EX
+        #     ))
+        #     keyboard = self.add_check_button(keyboard=keyboard)
+        #     await self.request.answer("Ты не подписан на все необходимые каналы!", show_alert=True)
+        #     await self.request.message.reply(
+        #         "Извини, бот **бесплатный**! Для доступа к функциям **подпишись пожалуйста на канал!**",
+        #         reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard), disable_web_page_preview=True
+        #     )
+        #     return
+        flyer = Flyer(FLYER_TOKEN)
+        if not await flyer.check(self.request.from_user.id):
             print(color_log(
-                f"Пользователь {self.request.from_user.id} не подписан на ОП! Отправка сообщения..", Fore.LIGHTGREEN_EX
+                f"Пользователь {self.request.from_user.id} не подписан на ОП! Отправка сообщения..",
+                Fore.LIGHTGREEN_EX
             ))
-            keyboard = self.add_check_button(keyboard=keyboard)
-            await self.request.answer("Ты не подписан на все необходимые каналы!", show_alert=True)
-            await self.request.message.reply(
-                "Извини, бот **бесплатный**! Для доступа к функциям **подпишись пожалуйста на канал!**",
-                reply_markup=InlineKeyboardMarkup(inline_keyboard=keyboard), disable_web_page_preview=True
-            )
             return
 
         print(color_log(

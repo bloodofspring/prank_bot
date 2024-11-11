@@ -5,12 +5,12 @@ from colorama import Fore
 from client_handlers.base import *
 from config import ADMINS
 from database.models import BotUsers
-from filters import is_admin
+from filters import is_admin_filter
 from util import color_log
 
 
 class Mailing(BaseHandler):
-    FILTER = command("mailing") & is_admin
+    FILTER = command("mailing") & is_admin_filter
 
     async def mailing(self) -> int:
         messages_sent = 0
