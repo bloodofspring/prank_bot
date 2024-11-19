@@ -40,7 +40,7 @@ class GetLink(BaseHandler):
 
         subscribed = len(BotUsers.select().where(BotUsers.is_subscribed_to_op))
         all_ = len(BotUsers.select())
-        percent = '{:.2f}%'.format(round(subscribed / all_, 2))
+        percent = '{:.2f}%'.format(round((subscribed / all_) * 100, 2))
         print(color_log(f"Подписанных на ОП пользователей: {subscribed}/{all_} ({percent})", Fore.LIGHTCYAN_EX))
 
         await self.request.message.reply((
