@@ -37,12 +37,12 @@ class GetLink(BaseHandler):
         print(color_log(
             f"Пользователь {self.request.from_user.id} подписан на ОП. Отправка на главную..", Fore.LIGHTGREEN_EX
         ))
-        print(color_log(
-            (
-                f"Подписанных на ОП пользователей: "
-                f"{'{:.2f}%'.format(round((len(BotUsers.select().where(BotUsers.is_subscribed_to_op)) / len(BotUsers.select()) * 100), 2))}"
-            ), Fore.LIGHTCYAN_EX
-        ))
+
+        subscribed = len(BotUsers.select().where(BotUsers.is_subscribed_to_op))
+        all_ = len(BotUsers.select())
+        percent = '{:.2f}%'.format(round(subscribed / all_, 2))
+        print(color_log(f"Подписанных на ОП пользователей: {subscribed}/{all_} ({percent})", Fore.LIGHTCYAN_EX))
+
         await self.request.message.reply((
             "Привет,\n"
             "🔗 Вот твоя ссылка:\n"
