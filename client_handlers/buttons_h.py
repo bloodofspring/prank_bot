@@ -4,6 +4,7 @@ from pyrogram.types import InlineKeyboardButton
 
 from client_handlers.base import *
 from config import FLYER_TOKEN
+from database.models import BotUsers
 from util import color_log
 
 
@@ -23,10 +24,24 @@ class GetLink(BaseHandler):
                 f"Пользователь {self.request.from_user.id} не подписан на ОП! Отправка сообщения..",
                 Fore.LIGHTGREEN_EX
             ))
+            db_user = self.db_user
+            db_user.is_subscribed_to_op = False
+            BotUsers.save(db_user)
+
             return
+
+        db_user = self.db_user
+        db_user.is_subscribed_to_op = True
+        BotUsers.save(db_user)
 
         print(color_log(
             f"Пользователь {self.request.from_user.id} подписан на ОП. Отправка на главную..", Fore.LIGHTGREEN_EX
+        ))
+        print(color_log(
+            (
+                f"Подписанных пользователей: "
+                f"{round(len(BotUsers.select().where(BotUsers.is_subscribed_to_op)) / len(BotUsers.select()), 2)}"
+            ), Fore.LIGHTCYAN_EX
         ))
         await self.request.message.reply((
             "Привет,\n"
