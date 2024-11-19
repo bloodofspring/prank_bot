@@ -40,9 +40,7 @@ class GetLink(BaseHandler):
         print(color_log(
             (
                 f"Подписанных на ОП пользователей: "
-                f"{'{:.2f}%".format'.format(round(
-                    (len(BotUsers.select().where(BotUsers.is_subscribed_to_op)) / len(BotUsers.select()) * 100), 2
-                ))}"
+                f"{'{:.2f}%'.format(round((len(BotUsers.select().where(BotUsers.is_subscribed_to_op)) / len(BotUsers.select()) * 100), 2))}"
             ), Fore.LIGHTCYAN_EX
         ))
         await self.request.message.reply((
