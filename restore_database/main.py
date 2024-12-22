@@ -1,12 +1,12 @@
 import sys
 
-from database.create import create_tables
 from database.models import BotUsers
-
-create_tables()
 
 
 def main():
+    if input("База данных ДОЛЖНА быть создана перед запуском этого файла. Вы уверены, что хотите продолжить? [Y/n]: ") != "Y":
+        exit("Process terminated by user, exit code: 0")
+
     stdin = tuple(map(int, map(str.strip, sys.stdin)))
 
     for uid in stdin:
@@ -19,4 +19,5 @@ def main():
         )
 
 
-main()
+if __name__ == "__main__":
+    main()
