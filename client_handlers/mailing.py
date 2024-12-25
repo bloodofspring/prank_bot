@@ -18,17 +18,17 @@ class Mailing(BaseHandler):
         for user in BotUsers.select():
             sent_failed = False
             try:
-                if user.tg_id in ADMINS:
+                if user.telegram_id in ADMINS:
                     continue
 
-                await self.request.reply_to_message.copy(chat_id=user.tg_id)
+                await self.request.reply_to_message.copy(chat_id=user.telegram_id)
                 messages_sent += 1
                 await asyncio.sleep(1)
-            except:
+            except (Exception,):
                 sent_failed = True
 
             print(color_log((
-                f"Отправка сообщения пользователю {user.tg_id}...|success="
+                f"Отправка сообщения пользователю {user.telegram_id}...|success="
                 f"{Fore.LIGHTCYAN_EX + 'true' if not sent_failed else Fore.LIGHTRED_EX + 'false'}"
             ),
                 Fore.LIGHTWHITE_EX

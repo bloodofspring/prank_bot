@@ -1,1 +1,1 @@
-from .db_init import db
+from .db_init import psql_db

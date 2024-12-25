@@ -31,7 +31,7 @@ class BaseHandler:
     @property
     def de_database(self):
         request = self.request.message if isinstance(self.request, CallbackQuery) else self.request
-        db_user, created = BotUsers.get_or_create(tg_id=request.chat.id)
+        db_user, created = BotUsers.get_or_create(telegram_id=request.chat.id)
         if created:
             print(color_log(
                 f"Пользователь {request.chat.id} занесен в базу данных! Всего пользователей: {len(BotUsers.select())}",

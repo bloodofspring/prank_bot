@@ -16,7 +16,7 @@ class Dump(BaseHandler):
             percent = '{:.2f}%'.format(round((subscribed / all_) * 100, 2))
             f.write(f"Всего пользователей: {len(db_users)}\n")
             f.write(f"Подписанных на ОП пользователей: {subscribed}/{all_} ({percent})\n")
-            f.write("\n".join(map(lambda x: str(x.tg_id), db_users)))
+            f.write("\n".join(map(lambda x: str(x.telegram_id), db_users)))
 
         await self.request.reply_document(document=open("dump.txt", "rb"))
 
