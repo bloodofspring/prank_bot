@@ -2,14 +2,14 @@ from datetime import datetime
 
 from peewee import Model, AutoField, DateTimeField
 
-from database import db
+from database import psql_db
 
 
 class BaseModel(Model):
     """
     Базовая модель с автоматическим заполнением поля ID и сохранением времени создания, изменения
     """
-    ID = AutoField()
+    id = AutoField()
     created_at = DateTimeField(default=datetime.now)
     updated_at = DateTimeField(default=datetime.now)
 
@@ -18,4 +18,4 @@ class BaseModel(Model):
         return super(BaseModel, self).save(*args, **kwargs)
 
     class Meta:
-        database = db
+        database = psql_db
