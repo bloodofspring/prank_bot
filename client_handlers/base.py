@@ -1,3 +1,5 @@
+import peewee
+import psycopg2
 from colorama import Fore
 from pyrogram import Client
 from pyrogram import filters, types
@@ -7,7 +9,10 @@ from pyrogram.handlers.handler import Handler
 from pyrogram.types import CallbackQuery
 
 from database.models.users import BotUsers
+from database.db_init import update_connection
 from util import color_log
+
+from config import DB_USER, DB_PASSWORD, DB_HOST, DB_PORT
 
 request_type = types.Message | types.CallbackQuery  # add some types here if you need:3
 __all__ = [
@@ -30,13 +35,17 @@ class BaseHandler:
 
     @property
     def de_database(self):
-        request = self.request.message if isinstance(self.request, CallbackQuery) else self.request
-        db_user, created = BotUsers.get_or_create(telegram_id=request.chat.id)
-        if created:
-            print(color_log(
-                f"Пользователь {request.chat.id} занесен в базу данных! Всего пользователей: {len(BotUsers.select())}",
-                Fore.LIGHTGREEN_EX
-            ))
+        try:
+            request = self.request.message if isinstance(self.request, CallbackQuery) else self.request
+            db_user, created = BotUsers.get_or_create(telegram_id=request.chat.id)
+            if created:
+                print(color_log(
+                    f"Пользователь {request.chat.id} занесен в базу данных! Всего пользователей: {len(BotUsers.select())}",
+                    Fore.LIGHTGREEN_EX
+                ))
+        except (peewee.InterfaceError, psycopg2.InterfaceError):
+            update_connection()
+            return self.de_database
 
         return db_user
 
